@@ -70,7 +70,8 @@ local function Number(token)
 	return tonumber(token)
 end
 
-local function Escape(note) return (note:gsub("[%%,;]", function(c) return ("%%%02X"):format(c:byte()) end)) end
+-- (OpenMap reads its code up to the first space, so spaces are escaped too; its Unescape takes any %XX)
+local function Escape(note) return (note:gsub("[%%,;%s]", function(c) return ("%%%02X"):format(c:byte()) end)) end
 
 -- one waypoint (what follows "/way"): map, x, y (0..1), note; or nil and why not
 local function Parse(text)

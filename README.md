@@ -23,7 +23,8 @@ Waypoints that can't be read are listed in chat. OpenMap's own pin codes (`OMPIN
 ## Also
 
 OpenMap's drawing tools (**Draw on the map**) show in front of the map's border and the quest log beside it,
-instead of behind them.
+instead of behind them. Blizzard's **Map Pin** button is hidden: on OpenMap's map it does nothing (OpenMap takes
+the click it waits for), and OpenMap's **Drop a pin** and Ctrl-click do what it's for.
 
 ## How it works
 

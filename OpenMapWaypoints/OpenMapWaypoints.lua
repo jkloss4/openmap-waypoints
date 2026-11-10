@@ -182,7 +182,32 @@ local function HookSketch()
 	hooksecurefunc(mod, "ToggleSketch", LiftTray)
 end
 
+--------------------------------------------------------------------------------
+-- Blizzard's Map Pin button (WorldMapFrame.WorldMapTrackingPinButton), hidden: on OpenMap's map it does
+-- nothing (OpenMap's own canvas click handler takes every click before Blizzard's pin placer's), and
+-- OpenMap's Drop a pin and Ctrl-click do what it's for. Blizzard shows it again (gamepad mode), so it's
+-- hidden whenever it shows.
+--------------------------------------------------------------------------------
+
+local function HidePinButton()
+	local button = WorldMapFrame and WorldMapFrame.WorldMapTrackingPinButton
+	if not button then return end
+	button:HookScript("OnShow", button.Hide)
+	button:Hide()
+end
+
 local ticker
+if WorldMapFrame then
+	HidePinButton()
+else   -- (the map not loaded yet)
+	local wait = CreateFrame("Frame")
+	wait:RegisterEvent("ADDON_LOADED")
+	wait:SetScript("OnEvent", function(self, _, name)
+		if name ~= "Blizzard_WorldMap" then return end
+		self:UnregisterAllEvents()
+		HidePinButton()
+	end)
+end
 HookSketch()
 ticker = C_Timer.NewTicker(0.5, function()
 	local frame = _G.OpenMapPinsCode

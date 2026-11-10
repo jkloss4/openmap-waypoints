@@ -151,7 +151,39 @@ local function Hook(frame)
 	end
 end
 
+--------------------------------------------------------------------------------
+-- OpenMap's drawing tools (Draw on the map, Map/Sketch.lua) in front of the map's border: OpenMap puts
+-- them in the map's strata (MEDIUM), under the border (BorderFrame: HIGH, its portrait, title and
+-- buttons) and the quest log beside it, which then cover their ends. Lifted to the border's strata
+-- (their frame level is already above everything in it). Docked to a pin's card, they're in the card's.
+--------------------------------------------------------------------------------
+
+local STRATA = { BACKGROUND = 1, LOW = 2, MEDIUM = 3, HIGH = 4, DIALOG = 5, FULLSCREEN = 6,
+	FULLSCREEN_DIALOG = 7, TOOLTIP = 8 }
+
+local tray
+local function FindTray()
+	if tray then return tray end
+	for _, child in ipairs({ WorldMapFrame:GetChildren() }) do
+		if child.tools and child.done and child.head then tray = child return tray end   -- (its fields)
+	end
+end
+
+local function LiftTray()
+	local t, border = FindTray(), WorldMapFrame.BorderFrame
+	if not (t and border) then return end
+	local want = border:GetFrameStrata()
+	if (STRATA[t:GetFrameStrata()] or 0) < (STRATA[want] or 0) then t:SetFrameStrata(want) end
+end
+
+local function HookSketch()
+	local ok, mod = pcall(function() return _G.OpenMap:GetModule("worldmap") end)
+	if not (ok and mod and type(mod.ToggleSketch) == "function") then return end
+	hooksecurefunc(mod, "ToggleSketch", LiftTray)
+end
+
 local ticker
+HookSketch()
 ticker = C_Timer.NewTicker(0.5, function()
 	local frame = _G.OpenMapPinsCode
 	if frame then

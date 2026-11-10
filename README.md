@@ -20,6 +20,11 @@ Any of these, one or many, on separate lines or run together:
 
 Waypoints that can't be read are listed in chat. OpenMap's own pin codes (`OMPINS1:...`) still import as before.
 
+## Also
+
+OpenMap's drawing tools (**Draw on the map**) show in front of the map's border and the quest log beside it,
+instead of behind them.
+
 ## How it works
 
 When you click **Add the pins**, the waypoints are turned into OpenMap's own pin code just before OpenMap reads the box,

@@ -26,6 +26,10 @@ OpenMap's drawing tools (**Draw on the map**) show in front of the map's border 
 instead of behind them. Blizzard's **Map Pin** button is hidden: on OpenMap's map it does nothing (OpenMap takes
 the click it waits for), and OpenMap's **Drop a pin** and Ctrl-click do what it's for.
 
+With OpenMap's **Dungeon maps** turned off and NeedRoll showing its map of the
+dungeon you're in, OpenMap's icons (quests, flight and boat routes, map pins) are hidden so they don't show through
+NeedRoll's map. They come back when NeedRoll's map goes.
+
 ## How it works
 
 When you click **Add the pins**, the waypoints are turned into OpenMap's own pin code just before OpenMap reads the box,

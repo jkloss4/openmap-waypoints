@@ -196,16 +196,86 @@ local function HidePinButton()
 	button:Hide()
 end
 
+--------------------------------------------------------------------------------
+-- NeedRoll's dungeon map over OpenMap's: with OpenMap's Dungeon maps off, inside a dungeon its map stays
+-- the world map, and NeedRoll lays its own map of the dungeon on the game's map, just over the map art
+-- (UI/WorldMapOverlay.lua). OpenMap's icons (quests, flight and boat routes, map pins: its pin root, on
+-- the map's view far above) then show through NeedRoll's map, so they're hidden while NeedRoll's map shows.
+--------------------------------------------------------------------------------
+
+local needRollLayer, pinRoot
+
+-- OpenMap's icons: the frame its Stitch.lua lists as "OpenMap icons" (made with the stitched map)
+local function PinRoot()
+	if pinRoot then return pinRoot end
+	local S = _G.OpenMap and _G.OpenMap.MapStitch
+	if not (S and type(S.Parts) == "function") then return end
+	local ok, parts = pcall(S.Parts)
+	if not ok then return end
+	for _, part in ipairs(parts or {}) do
+		if part[1] == "OpenMap icons" and part[2] and part[2][1] then pinRoot = part[2][1] break end
+	end
+	if pinRoot then
+		-- (OpenMap shows them again when the stitched map does: hidden again while NeedRoll's map shows)
+		local function Again() if needRollLayer and needRollLayer:IsVisible() then pinRoot:Hide() end end
+		hooksecurefunc(pinRoot, "Show", Again)
+		hooksecurefunc(pinRoot, "SetShown", Again)
+	end
+	return pinRoot
+end
+
+local function PlaceIcons()
+	local root = PinRoot()
+	if not root then return end
+	if needRollLayer and needRollLayer:IsVisible() then
+		root:Hide()
+	else   -- (as OpenMap has them: with its stitched map)
+		local S = _G.OpenMap.MapStitch
+		root:SetShown(S.IsShownNow and S.IsShownNow() or false)
+	end
+end
+
+-- NeedRoll's layer: made the first time its map shows, on the map's scroll container (its fields)
+local function FindNeedRollLayer()
+	if needRollLayer then return end
+	local container = WorldMapFrame.ScrollContainer
+	if not container then return end
+	for _, child in ipairs({ container:GetChildren() }) do
+		if child.zoneButton and child.noLevelLinks then
+			needRollLayer = child
+			child:HookScript("OnShow", PlaceIcons)
+			child:HookScript("OnHide", PlaceIcons)
+			break
+		end
+	end
+end
+
+local function WatchNeedRoll()
+	local loaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded
+	if not loaded("NeedRoll") then return end
+	WorldMapFrame:HookScript("OnShow", function()
+		C_Timer.After(0, function()   -- (after NeedRoll's own OnShow has laid its map)
+			FindNeedRollLayer()
+			PlaceIcons()
+		end)
+	end)
+end
+
+local function SetUpMap()
+	HidePinButton()
+	WatchNeedRoll()
+end
+
 local ticker
 if WorldMapFrame then
-	HidePinButton()
+	SetUpMap()
 else   -- (the map not loaded yet)
 	local wait = CreateFrame("Frame")
 	wait:RegisterEvent("ADDON_LOADED")
 	wait:SetScript("OnEvent", function(self, _, name)
 		if name ~= "Blizzard_WorldMap" then return end
 		self:UnregisterAllEvents()
-		HidePinButton()
+		SetUpMap()
 	end)
 end
 HookSketch()

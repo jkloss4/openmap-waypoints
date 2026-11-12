@@ -2,6 +2,7 @@
 
 A small companion to [OpenMap](https://www.curseforge.com/wow/addons/openmap) for WoW: Forever (Interface 16001):
 its map pin **Import** also takes TomTom waypoints, as Wowhead and guides give them.
+(The OpenMap workarounds that were in v1.1.0 are in [OpenMap Fixes](https://github.com/jkloss4/openmap-fixes) now.)
 
 ## Use
 
@@ -19,16 +20,6 @@ Any of these, one or many, on separate lines or run together:
 - The rest of the line becomes the pin's note.
 
 Waypoints that can't be read are listed in chat. OpenMap's own pin codes (`OMPINS1:...`) still import as before.
-
-## Also
-
-OpenMap's drawing tools (**Draw on the map**) show in front of the map's border and the quest log beside it,
-instead of behind them. Blizzard's **Map Pin** button is hidden: on OpenMap's map it does nothing (OpenMap takes
-the click it waits for), and OpenMap's **Drop a pin** and Ctrl-click do what it's for.
-
-With OpenMap's **Dungeon maps** turned off and NeedRoll showing its map of the
-dungeon you're in, OpenMap's icons (quests, flight and boat routes, map pins) are hidden so they don't show through
-NeedRoll's map. They come back when NeedRoll's map goes.
 
 ## How it works
 
